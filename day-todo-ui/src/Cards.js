@@ -3,9 +3,9 @@ const Cards = ({data}) => {
 
     const radius = 40;
     const circumference = 2 * Math.PI * radius;
-    const todaystroke = circumference - (data.donePercent / 100) * circumference;
+    const todaystroke = data.todoCount > 0 ? circumference - ( data.donePercent / 100) * circumference : 251.32741228718345
     const weekstroke = data.todoCount > 0 ? circumference - ( data.dueCount / data.todoCount) * circumference : 251.32741228718345
-
+    
     return ( 
         <div style={{ display: "flex", justifyContent: "space-evenly", gap: "10px" }}>
             <div style={{ textAlign: 'center' }}>

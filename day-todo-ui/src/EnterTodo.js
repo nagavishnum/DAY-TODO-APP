@@ -53,7 +53,7 @@ const EnterTodo = ({ getData }) => {
                 <option value="Low">Low</option>
             </select>
             <input onKeyPress={handleKeyPress} type="time" ref={timeInput} />
-            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "200px" }} disabled={loading} onClick={handleSubmit}>
+            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleSubmit}>
                 {loading ? "Loading" : "Save Todo"}
             </button>
         </div>
