@@ -11,3 +11,47 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+input[type="text"],
+input[type="time"] {
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+select {
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: white; /* Ensure dropdown arrow is visible */
+}
+
+input::placeholder,
+select option[disabled] {
+  color: #999;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #2ecc71;
+  box-shadow: 0 0 5px #2ecc71;
+}
+button:focus{
+  outline: none;
+
+}
+
+#priority option:hover {
+  background-color: #2ecc71;
+}
+
+
+

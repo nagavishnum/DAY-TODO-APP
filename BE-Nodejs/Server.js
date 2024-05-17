@@ -15,44 +15,78 @@ const db = mysql.createPool({
     database: "todo",
 });
 
- const initializeDatabase = () => {
+const initializeDatabase = () => {
     const createTableQuery = `CREATE TABLE IF NOT EXISTS dayTodo (
         id INT AUTO_INCREMENT PRIMARY KEY,
         todo VARCHAR(255) NOT NULL,
-        status BOOLEAN DEFAULT false,
+        time TIME NOT NULL,
+        priority ENUM('High', 'Medium', 'Low') NOT NULL,
+        status ENUM('PENDING', 'ONGOING', 'DONE') DEFAULT 'PENDING' NOT NULL,
         date DATE NOT NULL
     )`;
 
     db.query(createTableQuery, (err, result) => {
         if (err) {
             console.error("Error creating table:", err);
-        } else {
-            console.log("Table 'dayTodo' created or already exists");
         }
     });
 };
 app.post("/saveTodo", (req, res) => {
-    const { todo, date } = req.body;
-    const sql = "INSERT INTO dayTodo (todo, date) VALUES (?, ?)";
-    db.query(sql, [todo, date], (err, result) => {
+    const { todo, priority, time } = req.body;
+    if (!todo || !priority || !time) {
+        res.statusMessage = "Values cannot be empty";
+        return res.status(400).end();
+    }
+    const currentDate = new Date().toISOString().slice(0, 10); // Get current date in 'YYYY-MM-DD' format
+    const sql = "INSERT INTO dayTodo (todo, date,priority,time) VALUES (?, ?,?,?)";
+    db.query(sql, [todo, currentDate, priority, time], (err, result) => {
         if (err) {
-            console.error("Error saving todo:", err);
-            return res.status(500).json({ error: "Internal Server Error" });
+            res.statusMessage = "Failed";
+            return res.status(500).end();
         }
-        return res.json({ message: "Todo saved successfully" });
+        res.statusMessage = "Success";
+        return res.status(200).end();
     });
 });
 
-app.get("/getAllTodos", (req, res) => {
-    const sql = "SELECT * FROM dayTodo";
-    db.query(sql, (err, result) => {
+
+app.get("/todosByDate", (req, res) => {
+    const currentDate = new Date().toISOString().slice(0, 10); // Get current date in 'YYYY-MM-DD' format
+    const sql = "SELECT * FROM dayTodo WHERE date = ?";
+    db.query(sql, [currentDate], (err, results) => {
         if (err) {
-            console.error("Error fetching todos:", err);
+            console.error("Error fetching todos by date:", err);
             return res.status(500).json({ error: "Internal Server Error" });
         }
-        return res.json(result);
+        return res.json(results);
     });
 });
+
+app.put("/updateTodoStatus", (req, res) => {
+    const { status, id } = req.body;
+    const sql = "UPDATE dayTodo SET status = ? WHERE id = ?";
+    db.query(sql, [status, id], (err, result) => {
+        if (err) {
+            console.error("Error updating todo status:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        return res.json({ message: "Todo status updated successfully" });
+    });
+});
+app.delete("/deleteTodo/:id", (req, res) => {
+    const { id } = req.params;
+    const sql = "DELETE FROM dayTodo WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error deleting todo:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        return res.json({ message: "Todo deleted successfully" });
+    });
+});
+
+
+
 
 
 const PORT = 8081;

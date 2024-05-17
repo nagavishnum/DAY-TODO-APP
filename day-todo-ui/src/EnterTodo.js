@@ -1,43 +1,63 @@
-import {useRef, useState } from "react"
+import { useRef, useState } from "react";
 
-const EnterTodo = ({ getData}) => {
+const EnterTodo = ({ getData }) => {
     const userTodo = useRef(null);
-    const [loading, setloading] = useState(false);
+    const prioritySelect = useRef(null);
+    const timeInput = useRef(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (userTodo.current.value) {
-            setloading(true);
+        if (userTodo.current.value && prioritySelect.current.value && timeInput.current.value) {
+            setLoading(true);
             const obj1 = {
-                name: userTodo.current.value,
-            }
-            fetch("/saveTodo", {
+                todo: userTodo.current.value,
+                priority: prioritySelect.current.value, // Get the selected priority value
+                time: timeInput.current.value // Get the value from the time input
+            };
+
+            const res = await fetch("http://localhost:8081/saveTodo", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(obj1)
-            }).then(res => {
-                console.log(res);
-            })
-            
+            });
+            if ([200, 201].includes(res.status)) {
+                userTodo.current.value = "";
+                prioritySelect.current.value = "";
+                timeInput.current.value = "";
+                getData();
+            }
+            else {
+                window.alert(res.statusText);
+            }
+            setLoading(false);
+        } else {
+            window.alert("Enter Required Data");
         }
-        else {
-            window.alert("Please Enter Todo");
-        }
-        userTodo.current.value = null;
-        getData();
-        setloading(false);
-    }
+    };
+
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
             handleSubmit();
         }
     };
+
     return (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <input onKeyPress={handleKeyPress} autoFocus type="text" ref={userTodo} style={{ flex: "70%", borderRadius: "10px", height: "30px" }} />
-            <button style={{ flex: 1,backgroundColor:"#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer" }} disabled={loading} onClick={handleSubmit}>{loading ? "Loading" : "Save Todo"}</button>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "space-evenly" }}>
+            <input autoFocus type="text" ref={userTodo} placeholder="Enter Todo" />
+            <select id="priority" name="priority" ref={prioritySelect}>
+                <option value="">Priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+            <input onKeyPress={handleKeyPress} type="time" ref={timeInput} />
+            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "200px" }} disabled={loading} onClick={handleSubmit}>
+                {loading ? "Loading" : "Save Todo"}
+            </button>
         </div>
-    )
-}
-export default EnterTodo
+    );
+};
+
+export default EnterTodo;

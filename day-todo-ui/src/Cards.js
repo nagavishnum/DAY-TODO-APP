@@ -1,34 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
 
-const Cards = ({ data ,date}) => {
-    const [percent, setpercent] = useState({
-        todaypercent: '',
-        weekpercent: '',
-        monthpercent: ''
-    });
-
-    const filterPercentages = useCallback(async () => {
-        const percentage = data?.percent;
-       
-        const currentdatepercent = percentage && await percentage?.filter((x) => x.date == date);
-        const weekpercent = percentage && await percentage?.map((x) => x.percentage);
-  
-        const sum = weekpercent && weekpercent?.reduce((acc, currentValue) => acc + currentValue, 0);
-        const averageweek = sum / weekpercent.length;
-        const value = currentdatepercent[0]?.percentage;
-        setpercent((x) => ({ ...x, todaypercent: Math.round(value ?value: 0), weekpercent: Math.round(averageweek ?averageweek: 0) }));
-    }, [data]);
-
-    useEffect(() => {
-        filterPercentages();
-    }, [filterPercentages]);
+const Cards = ({data}) => {
 
     const radius = 40;
     const circumference = 2 * Math.PI * radius;
-    const todaystroke = circumference - (percent?.todaypercent / 100) * circumference;
-    const weekstroke = circumference - (percent?.weekpercent / 100) * circumference;
+    const todaystroke = circumference - (data.donePercent / 100) * circumference;
+    const weekstroke = data.todoCount > 0 ? circumference - ( data.dueCount / data.todoCount) * circumference : 251.32741228718345
 
-    return (
+    return ( 
         <div style={{ display: "flex", justifyContent: "space-evenly", gap: "10px" }}>
             <div style={{ textAlign: 'center' }}>
                 <svg width="120" height="120" viewBox="0 0 120 120">
@@ -51,10 +29,10 @@ const Cards = ({ data ,date}) => {
                         strokeDashoffset={todaystroke}
                     />
                     <text x="50%" y="50%" textAnchor="middle" fill="#333" fontSize="20px">
-                        {percent?.todaypercent}%
+                        {data.donePercent ? data.donePercent : 0}%
                     </text>
                 </svg>
-                <p>TODAY</p>
+                <p style={{fontWeight:"bold"}}>TODAY</p>
             </div>
             <div style={{ textAlign: 'center' }}>
                 <svg width="120" height="120" viewBox="0 0 120 120">
@@ -77,10 +55,10 @@ const Cards = ({ data ,date}) => {
                         strokeDashoffset={weekstroke}
                     />
                     <text x="50%" y="50%" textAnchor="middle" fill="#333" fontSize="20px">
-                        {percent?.weekpercent ?? "NA"}%
+                        {data.dueCount ? data.dueCount : 0}
                     </text>
                 </svg>
-                <p>AVG COMPLETION</p>
+                <p  style={{fontWeight:"bold"}}>Tasks Past Due</p>
             </div>
         </div>
 
