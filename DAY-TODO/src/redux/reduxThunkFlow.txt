@@ -1,7 +1,0 @@
-1. we dispatch an action-thunk function 
-2. this action thunk func returns another func which has dispatch and getstate as arguments
-3. action thunks starts executing
-4. action thunk dispatches startexecution and finds type in that : START EXECUTION.
-5. action startexecution along with its type(action obj)is sent to reducer.
-6. reducer updates state wrt action type.
-7.

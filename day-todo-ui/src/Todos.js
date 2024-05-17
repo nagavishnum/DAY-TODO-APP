@@ -1,4 +1,4 @@
-import RCard from "../RCard";
+import RCard from "./RCard";
 
 const Todos = ({ data, getData,setData ,date}) => {
    
