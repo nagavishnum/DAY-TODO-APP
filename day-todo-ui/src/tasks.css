@@ -4,7 +4,7 @@
     border-radius: 20px;
     padding: 10px;
     border: 2px solid; /* Add a solid border */
-    width: 70px;
+    min-width: 70px; 
 }
 
 

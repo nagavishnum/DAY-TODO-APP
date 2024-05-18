@@ -8,6 +8,7 @@ const EnterTodo = ({ getData }) => {
 
     const handleSubmit = async () => {
         if (userTodo.current.value && prioritySelect.current.value && timeInput.current.value) {
+            console.log("submit");
             setLoading(true);
             const obj1 = {
                 todo: userTodo.current.value,
