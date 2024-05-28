@@ -7,6 +7,7 @@ const Todos = ({ todos, getData ,loading}) => {
             <RCard status="PENDING" todos={todos?.pendingTodos} getData={getData} />
             <RCard status="ONGOING" todos={todos?.ongoingTodos} getData={getData} />
             <RCard status="DONE" todos={todos?.doneTodos} getData={getData} />
+            <RCard status="FILTER BY" filter="true"/>
         </div >
     )
 }

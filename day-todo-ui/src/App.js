@@ -15,15 +15,20 @@ function App() {
     todoCount:""
   });
   const [loading, setloading] = useState(true);
+  const [dates, setDate] = useState({
+    min:'',
+    max:''
+});
 
-  const getData = useCallback(async () => {
+  const getData = useCallback(async (minDate) => {
     setloading(true);
-    const res = await fetch("http://localhost:8081/todosByDate", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
+    const res = await fetch(`http://localhost:8081/todosByDate/${minDate}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
     });
+    
     if([200,201].includes(res.status)){
       const jsontodos = await res.json();
       jsontodos && filtertodos(jsontodos);
@@ -54,16 +59,28 @@ function App() {
     setFilteredTodos((data) => ({ ...data, pendingTodos: pendingData, ongoingTodos: ongoingData, doneTodos: doneData, donePercent: Math.round(Percent), dueCount: dueLength ,todoCount:todosCount}));
     setloading(false);
   }
-
+  const addLeadingZero = (number) => {
+    return number < 10 ? `0${number}` : number;
+};
+  const getDate=async ()=> {
+    setloading(true);
+    const date = new Date();
+    const minDate = `${addLeadingZero(date.getFullYear())}-${addLeadingZero(date.getMonth() + 1)}-${addLeadingZero(date.getDate())}`;
+    const maxDateObj = new Date(date);
+    maxDateObj.setDate(date.getDate() + 5);
+    const maxDate = `${addLeadingZero(maxDateObj.getFullYear())}-${addLeadingZero(maxDateObj.getMonth() + 1)}-${addLeadingZero(maxDateObj.getDate())}`;
+    setDate({ min: minDate, max: maxDate });
+    getData(minDate);
+  }
   useEffect(() => {
-    getData();
-  }, []);
+    getDate();
+}, []);
 
   return (
 
     <div style={{ display: "flex", flexDirection: "column", gap: "20px", margin: "10px" }}>
 {      !loading && <Cards data={filteredtodos} />
-}      <EnterTodo getData={getData} />
+}      <EnterTodo getData={getData} dates={dates}/>
       <Todos todos={filteredtodos} loading={loading} getData={getData} />
     </div>
   );
