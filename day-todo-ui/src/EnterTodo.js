@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { getDatabyDate } from "./redux/Actions";
+import { useDispatch } from "react-redux";
 
-const EnterTodo = ({ getData ,dates}) => {
+const EnterTodo = ({ dates }) => {
 
     const [loading, setLoading] = useState(false);
-    const {min,max}= dates;
+    const { minDate, maxDate } = dates;
+    const dispatch = useDispatch()
 
     const formData = useRef({
         todoName: useRef(null),
         todoPriority: useRef(null),
-        todoDate: useRef(min),
+        todoDate: useRef(minDate),
         todoTime: useRef(null),
         todoNotifybefore: useRef(null)
     });
@@ -22,10 +25,10 @@ const EnterTodo = ({ getData ,dates}) => {
         return true;
     }
 
- 
+
 
     const resetFormData = () => {
-        for(const key in formData.current){
+        for (const key in formData.current) {
             formData.current[key].current.value = '';
         }
     }
@@ -36,10 +39,10 @@ const EnterTodo = ({ getData ,dates}) => {
             console.log(formData.current);
             const obj1 = {
                 todo: formData.current.todoName.current.value,
-                priority:formData.current.todoPriority.current.value,
+                priority: formData.current.todoPriority.current.value,
                 date: formData.current.todoDate.current.value,
                 time: formData.current.todoTime.current.value,
-                notifyBefore : formData.current.todoNotifybefore.current.value
+                notifyBefore: formData.current.todoNotifybefore.current.value
             };
             const res = await fetch("http://localhost:8081/saveTodo", {
                 method: "POST",
@@ -50,7 +53,7 @@ const EnterTodo = ({ getData ,dates}) => {
             });
             if ([200, 201].includes(res.status)) {
                 resetFormData();
-                getData();
+                dispatch(getDatabyDate());
             }
             else {
                 window.alert(res.statusText);
@@ -76,7 +79,7 @@ const EnterTodo = ({ getData ,dates}) => {
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
             </select>
-            <input type="date" ref={formData.current.todoDate} defaultValue={min} min={min} max={max}/>
+            <input type="date" ref={formData.current.todoDate} defaultValue={minDate} min={minDate} max={maxDate} />
             <input type="time" ref={formData.current.todoTime} />
             <select id="notify" name="notify" ref={formData.current.todoNotifybefore} onKeyPress={handleKeyPress}>
                 <option value="">Notify before</option>

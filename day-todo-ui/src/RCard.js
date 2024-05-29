@@ -5,9 +5,11 @@ import { GrFormNextLink } from "react-icons/gr";
 import { IoArrowBack } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
+import { getDatabyDate } from "./redux/Actions";
+import { useDispatch } from "react-redux";
 
 
-const RCard = ({ getData, status, todos, filter }) => {
+const RCard = ({ status, todos, filter }) => {
 
     const [loading, setloading] = useState(false);
     const [filterForm, setFilterForm] = useState({
@@ -15,6 +17,9 @@ const RCard = ({ getData, status, todos, filter }) => {
         filterpriority: '',
         filterdue: ''
     });
+    const {filterDate} = filterForm;
+
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -25,7 +30,9 @@ const RCard = ({ getData, status, todos, filter }) => {
     }
 
     const handleFilter = async () => {
-        console.log(filterForm);
+        setloading(true);
+        dispatch(getDatabyDate(filterDate));
+        setloading(false);
     }
 
     const handleStatus = async (value, type) => {
@@ -38,7 +45,8 @@ const RCard = ({ getData, status, todos, filter }) => {
             body: JSON.stringify(obj1)
         });
         if ([200, 201].includes(res.status)) {
-            await getData();
+            dispatch(getDatabyDate());
+
         }
         else {
             window.alert(res.statusText);
@@ -52,7 +60,7 @@ const RCard = ({ getData, status, todos, filter }) => {
             },
         });
         if ([200, 201].includes(res.status)) {
-            await getData();
+            dispatch(getDatabyDate());
         }
         else {
             window.alert(res.statusText);
