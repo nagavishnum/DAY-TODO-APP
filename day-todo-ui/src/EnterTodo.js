@@ -55,12 +55,6 @@ const EnterTodo = () => {
         }
     };
 
-    const handleKeyPress = (event) => {
-        if (event.key === "Enter") {
-            handleSubmit();
-        }
-    };
-
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "space-evenly" }}>
             <input autoFocus type="text" ref={formData.current.todoName} placeholder="Enter Todo" />
@@ -71,7 +65,7 @@ const EnterTodo = () => {
                 <option value="Low">Low</option>
             </select>
             <input type="time" ref={formData.current.todoTime} />
-            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleSubmit}>
+            <button style={{ backgroundColor: "#4169E1", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleSubmit}>
                 {loading ? "Loading" : "Save Todo"}
             </button>
         </div>

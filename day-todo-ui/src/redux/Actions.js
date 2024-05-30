@@ -1,4 +1,4 @@
-const filtertodos = (todos, dispatch, filteredtodos) => {
+const filtertodos = (todos, filteredtodos) => {
     const pendingData = todos?.filter((x) => x.status === "PENDING");
     const ongoingData = todos?.filter((x) => x.status === "ONGOING");
     const doneData = todos?.filter((x) => x.status === "DONE");
@@ -15,9 +15,9 @@ const filtertodos = (todos, dispatch, filteredtodos) => {
 
     const formattedCurrentTime = `${currentHours}:${currentMinutes}:${currentSeconds}`;
 
-    const due = notDoneTasks?.filter(task => task.time < formattedCurrentTime);
-    const dueLength = due.length;
-    filteredtodos = {
+    const dueTasks = notDoneTasks?.filter(task => task.time < formattedCurrentTime);
+    const dueLength = dueTasks.length;
+    return {
         ...filteredtodos,
         pendingTodos: pendingData,
         ongoingTodos: ongoingData,
@@ -25,8 +25,8 @@ const filtertodos = (todos, dispatch, filteredtodos) => {
         donePercent: Math.round(Percent),
         dueCount: dueLength,
         todoCount: todosCount,
+        dueTasks: dueTasks
     };
-    dispatch({ type: "GET_TODO_BY_DATE", payload: filteredtodos })
 }
 
 export const getDatabyDate = (filterpriority) => {
@@ -53,7 +53,9 @@ export const getDatabyDate = (filterpriority) => {
                 dueCount: '',
                 todoCount: '',
             }
-            jsontodos && filtertodos(jsontodos, dispatch, filteredtodos);
+            const data = jsontodos && filtertodos(jsontodos, dispatch, filteredtodos);
+            dispatch({ type: "GET_TODO_BY_DATE", payload: data })
+
         }
     }
 }

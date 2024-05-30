@@ -5,7 +5,8 @@ const initialstate = {
         doneTodos: [],
         donePercent: '',
         dueCount: '',
-        todoCount: ''
+        todoCount: '',
+        dueTasks:[]
     },
     dates:{
         minDate:'',
@@ -20,12 +21,7 @@ const reducer =(state = initialstate,action)=> {
                 ...state,
                 todos: {
                     ...state.todos,
-                    pendingTodos: action.payload.pendingTodos,
-                    ongoingTodos: action.payload.ongoingTodos,
-                    doneTodos: action.payload.doneTodos,
-                    donePercent: action.payload.donePercent,
-                    dueCount: action.payload.dueCount,
-                    todoCount: action.payload.todoCount,
+                    ...action.payload
                 },
                 dates: {
                     ...state.dates,
@@ -38,14 +34,17 @@ const reducer =(state = initialstate,action)=> {
                     ...state,
                     todos: {
                         ...state.todos,
-                        pendingTodos: action.payload.pendingTodos,
-                        ongoingTodos: action.payload.ongoingTodos,
-                        doneTodos: action.payload.doneTodos,
-                        donePercent: action.payload.donePercent,
-                        dueCount: action.payload.dueCount,
-                        todoCount: action.payload.todoCount,
+                        ...action.payload
                     },
                 }
+                case "FILTER_DUE_TODOS" :
+                    return {
+                        ...state,
+                        todos:{
+                            ...state.todos,
+                            ...action.payload
+                        }
+                    }
             default:
                 return state;
     }

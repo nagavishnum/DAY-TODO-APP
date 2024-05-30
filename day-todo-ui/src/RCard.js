@@ -4,7 +4,7 @@ import { MdDone } from "react-icons/md";
 import { GrFormNextLink } from "react-icons/gr";
 import { IoArrowBack } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import { getDatabyDate } from "./redux/Actions";
 import { useDispatch } from "react-redux";
 
@@ -15,7 +15,8 @@ const RCard = ({ status, todos, filter }) => {
         filterpriority: '',
         filterdue: ''
     });
-    const {  filterpriority } = filterForm;
+    const [time, setCurrentTime] = useState('');
+    const { filterpriority } = filterForm;
     const dispatch = useDispatch();
 
     const handleChange = (e) => {
@@ -26,9 +27,21 @@ const RCard = ({ status, todos, filter }) => {
         }));
     }
 
+    const checkcurrentTime = () => {
+        const now = new Date();
+        now.setSeconds(0);
+        const currentTime = now.toLocaleTimeString([], { hour12: false });
+        setCurrentTime(currentTime);
+    }
+
+    useEffect(() => {
+      const IntervalId=   setInterval(() => { checkcurrentTime() }, 60000);
+      checkcurrentTime();
+      return ()=> clearInterval(IntervalId);
+    },[]);
 
     const handleFilter = async () => {
-       if(filterpriority) {
+        if (filterpriority) {
             setloading(true);
             dispatch(getDatabyDate(filterpriority));
             setloading(false);
@@ -87,8 +100,8 @@ const RCard = ({ status, todos, filter }) => {
             <h5 style={{ textAlign: "center" }}>{status}</h5>
             {
                 todos && todos.map((value) => (
-                    <div className="task" key={value.id} style={{ display: "flex", gap: "5px", alignItems: "center", justifyContent: "space-between" }}>
-                        <CiBookmark style={{ color: value.priority === 'High' ? '#FF5733' : value.priority === 'Medium' ? '#FFD700' : '#228B22' }} />
+                    <div className="task" key={value.id} style={{ display: "flex", gap: "5px", alignItems: "center", justifyContent: "space-between",borderColor:status === "PENDING" && time > value.time ? "red" :"" }}>
+                        <CiBookmark style={{ color: value.priority === 'High' ? '#FF5733' : value.priority === 'Medium' ? '#FFD700' : '#87CEEB' }} />
                         <p key={value.id} className="task-title" style={{ wordWrap: "break-word" }}>{value.todo}</p>
                         {status !== "DONE" && <MdDone style={{ color: "#228B22", cursor: "pointer" }} onClick={() => handleStatus(value, "DONE")} />}
                         {status === "PENDING" && <GrFormNextLink style={{ color: "#4169E1", cursor: "pointer" }} onClick={() => handleStatus(value, "ONGOING")} />}
@@ -106,10 +119,10 @@ const RCard = ({ status, todos, filter }) => {
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
-                        <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleFilter}>
+                        <button style={{ backgroundColor: "#4169E1", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleFilter}>
                             {loading ? "Loading" : "Filter"}
                         </button>
-                        <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleClear}>
+                        <button style={{ backgroundColor: "#FF5733", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleClear}>
                             {loading ? "Loading" : "Clear"}
                         </button>
                     </div>

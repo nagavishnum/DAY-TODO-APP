@@ -2,7 +2,7 @@ import './App.css';
 import Cards from './Cards';
 import EnterTodo from './EnterTodo';
 import Todos from './Todos';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDatabyDate } from './redux/Actions';
 
@@ -12,13 +12,11 @@ function App() {
   const [loading, setloading] = useState(true);
   const filteredtodos = useSelector(state => state.todos);
 
-  const getData = () => {
+  const getData = useCallback(() => {
     !loading && setloading(true);
     dispatch(getDatabyDate());
     setloading(false);
-
-  }
-
+  },[dispatch,loading])
 
 
   const showNotification = (title, body) => {
@@ -39,31 +37,32 @@ function App() {
   };
 
 
-  const checkTasks = async () => {
-    const now = new Date();
-    console.log(filteredtodos);
-    console.log(now);
-
+  const checkTasks =  useCallback(async(filteredtodos) => {
+    const now = new Date();   
+    now.setSeconds(0);
+    const currentTime = now.toLocaleTimeString([], { hour12: false });
     filteredtodos.pendingTodos.forEach(task => {
-      console.log("kk");
-      console.log(task.time)
-      const taskTime = new Date(task.time);
-      console.log(taskTime, task.time);
-      if (now.getTime() === taskTime.getTime()) {
-        const title = `Reminder: ${task.todo}`;
-        const time = `Time to start ${task.time}`;
-        showNotification(title, time);
+      const taskTime = task.time;
+
+      if (currentTime === taskTime) {
+        const title = `Reminder`;
+        const body = `${task.todo}.\nTime to start ${taskTime}.\nPriority : ${task.priority}`;
+        showNotification(title, body);
       }
     });
-  }
+  },[])
+
   useEffect(() => {
     getData();
-    checkTasks();
+  }, [getData]);
 
-    // setInterval(() => {
-    // }, 60000); // 60000 milliseconds = 1 minute
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkTasks(filteredtodos);
+    }, 50000);
 
-  }, [filteredtodos]);
+    return () => clearInterval(intervalId);
+  }, [filteredtodos,checkTasks]);
 
 
   return (
