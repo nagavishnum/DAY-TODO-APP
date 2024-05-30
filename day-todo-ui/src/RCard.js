@@ -4,21 +4,18 @@ import { MdDone } from "react-icons/md";
 import { GrFormNextLink } from "react-icons/gr";
 import { IoArrowBack } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
-import { useState } from "react";
+import {  useState } from "react";
 import { getDatabyDate } from "./redux/Actions";
 import { useDispatch } from "react-redux";
 
 
 const RCard = ({ status, todos, filter }) => {
-
     const [loading, setloading] = useState(false);
     const [filterForm, setFilterForm] = useState({
-        filterDate: '',
         filterpriority: '',
         filterdue: ''
     });
-    const {filterDate} = filterForm;
-
+    const {  filterpriority } = filterForm;
     const dispatch = useDispatch();
 
     const handleChange = (e) => {
@@ -29,13 +26,30 @@ const RCard = ({ status, todos, filter }) => {
         }));
     }
 
+
     const handleFilter = async () => {
+       if(filterpriority) {
+            setloading(true);
+            dispatch(getDatabyDate(filterpriority));
+            setloading(false);
+        }
+        else {
+            alert("Please select any Filter!");
+        }
+    }
+
+    const handleClear = async () => {
         setloading(true);
-        dispatch(getDatabyDate(filterDate));
+        dispatch(getDatabyDate());
+        setFilterForm({
+            filterpriority: '',
+            filterdue: ''
+        });
         setloading(false);
     }
 
     const handleStatus = async (value, type) => {
+
         const obj1 = { id: value.id, status: type };
         const res = await fetch("http://localhost:8081/updateTodoStatus", {
             method: "PUT",
@@ -45,6 +59,7 @@ const RCard = ({ status, todos, filter }) => {
             body: JSON.stringify(obj1)
         });
         if ([200, 201].includes(res.status)) {
+
             dispatch(getDatabyDate());
 
         }
@@ -52,6 +67,7 @@ const RCard = ({ status, todos, filter }) => {
             window.alert(res.statusText);
         }
     }
+
     const handleDelete = async (value) => {
         const res = await fetch(`http://localhost:8081/deleteTodo/${value.id}`, {
             method: "DELETE",
@@ -84,7 +100,6 @@ const RCard = ({ status, todos, filter }) => {
             {
                 filter && (
                     <div style={{ display: "flex", flexDirection: 'column', gap: "10px" }}>
-                        <input type="date" id="filterDate" onChange={handleChange} value={filterForm.filterDate} />
                         <select id="filterpriority" onChange={handleChange} onSelect={handleChange} value={filterForm.filterpriority}>
                             <option value="">Priority</option>
                             <option value="High">High</option>
@@ -93,6 +108,9 @@ const RCard = ({ status, todos, filter }) => {
                         </select>
                         <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleFilter}>
                             {loading ? "Loading" : "Filter"}
+                        </button>
+                        <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleClear}>
+                            {loading ? "Loading" : "Clear"}
                         </button>
                     </div>
                 )

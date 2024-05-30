@@ -33,6 +33,19 @@ const reducer =(state = initialstate,action)=> {
                     maxDate: action.payload.maxDate
                 }
             };
+            case "GET_TODO_BY_DATE_PRIORITY":
+                return {
+                    ...state,
+                    todos: {
+                        ...state.todos,
+                        pendingTodos: action.payload.pendingTodos,
+                        ongoingTodos: action.payload.ongoingTodos,
+                        doneTodos: action.payload.doneTodos,
+                        donePercent: action.payload.donePercent,
+                        dueCount: action.payload.dueCount,
+                        todoCount: action.payload.todoCount,
+                    },
+                }
             default:
                 return state;
     }

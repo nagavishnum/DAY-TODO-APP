@@ -23,9 +23,7 @@ const initializeDatabase = () => {
         todo VARCHAR(255) NOT NULL,
         time TIME NOT NULL,
         priority ENUM('High', 'Medium', 'Low') NOT NULL,
-        status ENUM('PENDING', 'ONGOING', 'DONE') DEFAULT 'PENDING' NOT NULL,
-        date DATE NOT NULL,
-        notifyBefore INT DEFAULT '0' NOT NULL
+        status ENUM('PENDING', 'ONGOING', 'DONE') DEFAULT 'PENDING' NOT NULL
     )`;
 
     db.query(createTableQuery, (err, result) => {
@@ -43,13 +41,13 @@ app.listen(PORT, () => {
 
 
 app.post("/saveTodo", (req, res) => {
-    const { todo, priority, time, notifyBefore, date } = req.body;
-    if (!todo || !priority || !time || !date) {
+    const { todo, priority, time } = req.body;
+    if (!todo || !priority || !time) {
         res.statusMessage = "Values cannot be empty";
         return res.status(400).end();
     }
-    const sql = "INSERT INTO dayTodo (todo, date,priority,time,notifyBefore) VALUES (?, ?,?,?,?)";
-    db.query(sql, [todo, date, priority, time, notifyBefore], (err, result) => {
+    const sql = "INSERT INTO dayTodo (todo,priority,time) VALUES (?,?,?)";
+    db.query(sql, [todo, priority, time], (err, result) => {
         if (err) {
             res.statusMessage = "Failed";
             return res.status(500).end();
@@ -59,12 +57,21 @@ app.post("/saveTodo", (req, res) => {
     });
 });
 
-console.log("currentDate");
+app.get("/getAllTodos", (req, res) => {
+    const sql = "SELECT * FROM dayTodo";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Error fetching todos by date:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        return res.json(results);
+    });
+});
 
-app.get("/todosByDate/:currentDate", (req, res) => {
-    const currentDate = req.params.currentDate;
-    const sql = "SELECT * FROM dayTodo WHERE date = ?";
-    db.query(sql, [currentDate], (err, results) => {
+app.get("/filterByDatePrioroty/:filterpriority", (req, res) => {
+    const priority = req.params.filterpriority;
+    const sql = "SELECT * FROM dayTodo WHERE priority = ?";
+    db.query(sql, [priority], (err, results) => {
         if (err) {
             console.error("Error fetching todos by date:", err);
             return res.status(500).json({ error: "Internal Server Error" });

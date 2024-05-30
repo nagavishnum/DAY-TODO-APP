@@ -2,18 +2,14 @@ import { useRef, useState } from "react";
 import { getDatabyDate } from "./redux/Actions";
 import { useDispatch } from "react-redux";
 
-const EnterTodo = ({ dates }) => {
-
+const EnterTodo = () => {
     const [loading, setLoading] = useState(false);
-    const { minDate, maxDate } = dates;
     const dispatch = useDispatch()
 
     const formData = useRef({
         todoName: useRef(null),
         todoPriority: useRef(null),
-        todoDate: useRef(minDate),
         todoTime: useRef(null),
-        todoNotifybefore: useRef(null)
     });
 
     const validationCheck = async () => {
@@ -25,8 +21,6 @@ const EnterTodo = ({ dates }) => {
         return true;
     }
 
-
-
     const resetFormData = () => {
         for (const key in formData.current) {
             formData.current[key].current.value = '';
@@ -36,13 +30,10 @@ const EnterTodo = ({ dates }) => {
         const validationstatus = await validationCheck();
         if (validationstatus) {
             setLoading(true);
-            console.log(formData.current);
             const obj1 = {
                 todo: formData.current.todoName.current.value,
                 priority: formData.current.todoPriority.current.value,
-                date: formData.current.todoDate.current.value,
                 time: formData.current.todoTime.current.value,
-                notifyBefore: formData.current.todoNotifybefore.current.value
             };
             const res = await fetch("http://localhost:8081/saveTodo", {
                 method: "POST",
@@ -79,16 +70,8 @@ const EnterTodo = ({ dates }) => {
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
             </select>
-            <input type="date" ref={formData.current.todoDate} defaultValue={minDate} min={minDate} max={maxDate} />
             <input type="time" ref={formData.current.todoTime} />
-            <select id="notify" name="notify" ref={formData.current.todoNotifybefore} onKeyPress={handleKeyPress}>
-                <option value="">Notify before</option>
-                <option value='0'>Never</option>
-                <option value='5'>5 min</option>
-                <option value='10'>10 min</option>
-                <option value='15'>15 min</option>
-            </select>
-            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={resetFormData}>
+            <button style={{ backgroundColor: "#2ecc71", borderRadius: "10px", height: "40px", border: "none", cursor: "pointer", width: "300px" }} disabled={loading} onClick={handleSubmit}>
                 {loading ? "Loading" : "Save Todo"}
             </button>
         </div>
