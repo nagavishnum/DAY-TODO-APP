@@ -59,3 +59,20 @@ export const getDatabyDate = (filterpriority) => {
         }
     }
 }
+
+export const deleteByDate = () => {
+    return async(dispatch) => {
+        try {
+            const res =await fetch(`http://localhost:8081/deleteByDate`, { method: "DELETE", headers: { "Content-Type": "application/json" }, });
+            if ([200, 201].includes(res.status)) {
+                const jsonres = await res.json();
+                if (jsonres.message === "YES") {
+                    dispatch(getDatabyDate());
+                }
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+}

@@ -4,7 +4,7 @@ import EnterTodo from './EnterTodo';
 import Todos from './Todos';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDatabyDate } from './redux/Actions';
+import { deleteByDate, getDatabyDate } from './redux/Actions';
 
 function App() {
 
@@ -16,7 +16,7 @@ function App() {
     !loading && setloading(true);
     dispatch(getDatabyDate());
     setloading(false);
-  },[dispatch,loading])
+  }, [dispatch, loading])
 
 
   const showNotification = (title, body) => {
@@ -37,8 +37,8 @@ function App() {
   };
 
 
-  const checkTasks =  useCallback(async(filteredtodos) => {
-    const now = new Date();   
+  const checkTasks = useCallback(async (filteredtodos) => {
+    const now = new Date();
     now.setSeconds(0);
     const currentTime = now.toLocaleTimeString([], { hour12: false });
     filteredtodos.pendingTodos.forEach(task => {
@@ -50,7 +50,7 @@ function App() {
         showNotification(title, body);
       }
     });
-  },[])
+  }, [])
 
   useEffect(() => {
     getData();
@@ -62,7 +62,15 @@ function App() {
     }, 50000);
 
     return () => clearInterval(intervalId);
-  }, [filteredtodos,checkTasks]);
+  }, [filteredtodos, checkTasks]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      dispatch(deleteByDate());
+    }, 1800000);
+    return () => clearInterval(intervalId);
+
+  }, [])
 
 
   return (

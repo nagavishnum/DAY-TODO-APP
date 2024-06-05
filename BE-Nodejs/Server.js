@@ -22,6 +22,7 @@ const initializeDatabase = () => {
         id INT AUTO_INCREMENT PRIMARY KEY,
         todo VARCHAR(255) NOT NULL,
         time TIME NOT NULL,
+        date Date NOT NULL,
         priority ENUM('High', 'Medium', 'Low') NOT NULL,
         status ENUM('PENDING', 'ONGOING', 'DONE') DEFAULT 'PENDING' NOT NULL
     )`;
@@ -37,17 +38,15 @@ app.listen(PORT, () => {
     initializeDatabase();
 });
 
-
-
-
 app.post("/saveTodo", (req, res) => {
     const { todo, priority, time } = req.body;
+    const currentDate = new Date();
     if (!todo || !priority || !time) {
         res.statusMessage = "Values cannot be empty";
         return res.status(400).end();
     }
-    const sql = "INSERT INTO dayTodo (todo,priority,time) VALUES (?,?,?)";
-    db.query(sql, [todo, priority, time], (err, result) => {
+    const sql = "INSERT INTO dayTodo (todo,priority,time,date) VALUES (?,?,?,?)";
+    db.query(sql, [todo, priority, time, currentDate], (err, result) => {
         if (err) {
             res.statusMessage = "Failed";
             return res.status(500).end();
@@ -102,5 +101,28 @@ app.delete("/deleteTodo/:id", (req, res) => {
         return res.json({ message: "Todo deleted successfully" });
     });
 });
+
+app.delete("/deleteByDate", (req, res) => {
+    const currentDate = new Date(); // This represents the current date and time in the server's timezone
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Adding 1 to month since JavaScript months are zero-based
+    const currentDay = ('0' + currentDate.getDate()).slice(-2);
+    const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
+
+    const sql = "DELETE FROM dayTodo WHERE DATE(date) != ?";
+    db.query(sql, [formattedDate], (err, result) => {
+        if (err) {
+            console.error("Error deleting todo:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        if (result.affectedRows > 0) {
+            return res.json({ message: "YES" });
+        } else {
+            return res.json({ message: "No" });
+        }
+    });
+});
+
+
 
 
