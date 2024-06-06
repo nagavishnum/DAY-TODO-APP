@@ -3,7 +3,6 @@ const filtertodos = (todos, filteredtodos) => {
     const ongoingData = todos?.filter((x) => x.status === "ONGOING");
     const doneData = todos?.filter((x) => x.status === "DONE");
     const notDoneTasks = todos?.filter((x) => x.status !== "DONE");
-
     const todosCount = todos?.length;
     const doneCount = doneData?.length;
     const Percent = doneCount / todosCount * 100;

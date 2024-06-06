@@ -68,6 +68,7 @@ function App() {
     const intervalId = setInterval(() => {
       dispatch(deleteByDate());
     }, 1800000);
+    dispatch(deleteByDate())
     return () => clearInterval(intervalId);
 
   }, [])

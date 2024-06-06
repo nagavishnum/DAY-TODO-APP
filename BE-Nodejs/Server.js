@@ -108,7 +108,7 @@ app.delete("/deleteByDate", (req, res) => {
     const currentMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Adding 1 to month since JavaScript months are zero-based
     const currentDay = ('0' + currentDate.getDate()).slice(-2);
     const formattedDate = `${currentYear}-${currentMonth}-${currentDay}`;
-
+console.log(formattedDate);
     const sql = "DELETE FROM dayTodo WHERE DATE(date) != ?";
     db.query(sql, [formattedDate], (err, result) => {
         if (err) {
